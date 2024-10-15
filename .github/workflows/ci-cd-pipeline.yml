@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+# This triggers the pipeline on push to main or development branches
+on:
+  push:
+    branches:
+      - main
+      - development
+
+# Define Jobs
+jobs:
+  # Job to test and build
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Node.js (if using Node)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Run tests
+      - name: Run tests
+        run: npm test
+
+      # Build the project
+      - name: Build the project
+        run: npm run build
+
+  # Job to deploy to the server
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        run: |
+          ssh your_username@your_server_ip 'bash /path_to_deploy_script/deploy_script.sh'
